@@ -8,8 +8,8 @@ const UserSchema = new mongoose.Schema({
   lastName: String,
   age: Number,
   image: String,
+  role: { type: String, enum: ['admin', 'teacher', 'student'], default: 'student' }
 });
 
 const User = mongoose.model('User', UserSchema);
-
-export default User
+export default User;

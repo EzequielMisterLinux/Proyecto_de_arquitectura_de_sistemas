@@ -1,5 +1,3 @@
-import { loginUser } from '../services/api';
-
 export const LoginForm = () => {
   const form = document.createElement('form');
   form.className = 'max-w-md mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg';
@@ -16,18 +14,6 @@ export const LoginForm = () => {
     </div>
     <button type="submit" class="bg-blue-600 text-white p-3 rounded-lg w-full hover:bg-blue-700 transition duration-200">Login</button>
   `;
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = form.querySelector('#email').value;
-    const password = form.querySelector('#password').value;
-    try {
-      await loginUser({ email, password });
-      window.location.href = '/';
-    } catch (error) {
-      alert('Login failed: ' + (error.response?.data?.msg || error.message));
-    }
-  });
 
   return form;
 };

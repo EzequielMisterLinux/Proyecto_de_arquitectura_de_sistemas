@@ -6,7 +6,7 @@ import { configDotenv } from 'dotenv';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 
-configDotenv()
+configDotenv();
 const app = express();
 
 app.use(cors({
@@ -16,13 +16,10 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 
-
 app.use(express.json());
 app.use(cookieParser());
 
-mongoose.connect(process.env.MONGO, console.log("connection to mongo pass"),{
-  
-});
+mongoose.connect(process.env.MONGO, console.log('Connected to MongoDB'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
