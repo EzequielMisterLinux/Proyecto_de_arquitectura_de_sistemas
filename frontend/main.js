@@ -50,6 +50,7 @@ const renderPage = async () => {
         if (userRole === 'teacher') {
           console.log('Rendering TeacherDashboard');
           app.appendChild(TeacherDashboard());
+
         } else {
           console.log('Unauthorized access to teacher dashboard, redirecting to home');
           window.location.href = '/';

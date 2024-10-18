@@ -1,6 +1,4 @@
-// index.js
 import express from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { config as configDotenv } from 'dotenv';
@@ -11,6 +9,7 @@ import userRoutes from './routes/user.routes.js';
 import RoutesAsistence from './routes/asistence.routes.js';
 import attendanceSessionRoutes from './routes/attendanceSession.routes.js';
 import attendanceRoutes from './routes/attendance.routes.js';
+import connectionMongodb from './database/mongo.connection.js';
 
 configDotenv();
 
@@ -43,9 +42,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-mongoose.connect(process.env.MONGO)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Error connecting to MongoDB:', err));
+connectionMongodb()
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -55,5 +53,5 @@ app.use('/api/attendances', attendanceRoutes);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port http://localhost:${PORT}`);
 });

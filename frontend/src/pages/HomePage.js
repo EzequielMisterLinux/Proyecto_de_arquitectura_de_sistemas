@@ -1,6 +1,8 @@
 import { Header } from '../components/Header';
 import { UserList } from '../components/UserList';
-import { getCurrentUserRole, isUserLoggedIn } from '../services/api';
+import { getCurrentApellidos, getCurrentUsername, getCurrentUserRole, isUserLoggedIn } from '../services/api';
+
+
 
 export const HomePage = async () => {
   const page = document.createElement('div');
@@ -13,8 +15,13 @@ export const HomePage = async () => {
 
   const userRole = getCurrentUserRole();
 
+  const names = getCurrentUsername();
+
+  const apellidos = getCurrentApellidos();
+
   switch (userRole) {
     case 'admin':
+      
       const header = Header();
       page.appendChild(header);
 
@@ -23,13 +30,15 @@ export const HomePage = async () => {
 
       const welcomeMessage = document.createElement('h2');
       welcomeMessage.className = 'text-2xl font-bold mb-4';
-      welcomeMessage.textContent = 'Welcome, Admin!';
+      welcomeMessage.textContent = `welcome ${names} ${apellidos}`;
       content.appendChild(welcomeMessage);
 
       const userList = await UserList();
       content.appendChild(userList);
 
       page.appendChild(content);
+      
+      
       break;
     case 'student':
       

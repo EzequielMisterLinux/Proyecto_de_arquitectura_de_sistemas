@@ -18,7 +18,7 @@ const login = async (req, res) => {
 
   // Enviar el token en una cookie (httpOnly para mayor seguridad)
   res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-  res.json({ token, role: user.role });
+  res.json({ token, role: user.role , firstName:user.firstName, lastName:user.lastName});
 };
 
 const register = async (req, res) => {

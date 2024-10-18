@@ -1,5 +1,6 @@
 import { Header } from '../components/Header';
 import { io } from 'socket.io-client';
+import { getCurrentApellidos, getCurrentUsername } from '../services/api';
 
 export const TeacherDashboard = () => {
   const page = document.createElement('div');
@@ -7,9 +8,12 @@ export const TeacherDashboard = () => {
 
   page.appendChild(Header());
 
+  let nombres = getCurrentUsername()
+  let apellidos = getCurrentApellidos()
+
   const content = document.createElement('div');
   content.className = 'max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-6';
-  content.innerHTML = '<h1 class="text-3xl font-bold text-gray-800 mb-6">Teacher Dashboard</h1>';
+  content.innerHTML = `<h1 class="text-3xl font-bold text-gray-800 mb-6">bienvenid@ ${nombres} ${apellidos}</h1>`;
 
   page.appendChild(content);
 
@@ -35,7 +39,7 @@ export const TeacherDashboard = () => {
     </div>
     <div>
       <label for="createdBy" class="block text-sm font-medium text-gray-700">Teacher Name</label>
-      <input type="text" id="createdBy" name="createdBy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500" required />
+      <input type="text" id="createdBy" name="createdBy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500" required value="${nombres} ${apellidos}" readonly />
     </div>
     <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-300 ease-in-out">Create Attendance Session</button>
   `;
@@ -56,11 +60,10 @@ export const TeacherDashboard = () => {
 
       if (response.ok) {
         showNotification('Attendance session created successfully');
-        // Emit socket event to notify students
         const socket = io('http://localhost:3000');
         socket.emit('new_attendance_session', data);
-        fetchSessions(); // Refresh the list
-        form.reset(); // Clear the form
+        fetchSessions();
+        form.reset();
       }
     } catch (error) {
       console.error('Error creating attendance session:', error);
@@ -70,7 +73,6 @@ export const TeacherDashboard = () => {
 
   content.appendChild(form);
 
-  // Display list of attendance sessions
   const sessionList = document.createElement('div');
   sessionList.id = 'session-list';
   sessionList.className = 'space-y-4';
@@ -109,7 +111,7 @@ export const TeacherDashboard = () => {
 
   const showAttendances = async (sessionId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/attendances/${sessionId}`);
+      const response = await fetch(`http://localhost:3000/api/attendances?session=${sessionId}`);
       const attendances = await response.json();
 
       const modal = document.createElement('div');
@@ -151,15 +153,15 @@ export const TeacherDashboard = () => {
 
   fetchSessions();
 
-  // Set up real-time updates
+
   const socket = io('http://localhost:3000');
   
   socket.on('attendance_marked', (data) => {
     showNotification(`${data.studentName} marked attendance for session ${data.sessionId}`);
-    fetchSessions(); // Refresh the list to show updated attendance count
+    fetchSessions();
   });
 
-  setInterval(fetchSessions, 30000); // Refresh every 30 seconds
+  setInterval(fetchSessions, 30000);
 
   return page;
 };

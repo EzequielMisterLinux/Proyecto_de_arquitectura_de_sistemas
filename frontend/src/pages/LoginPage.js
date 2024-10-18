@@ -20,7 +20,10 @@ export const LoginPage = () => {
         window.location.href = '/student-dashboard';
       } else if (userData.role === 'teacher') {
         window.location.href = '/teacher-dashboard';
-      }
+      
+      }else if (userData.role === 'admin') {
+        window.location.href = '/';
+    }
     } catch (error) {
       alert('Login failed. Please try again.');
     }

@@ -6,7 +6,8 @@ const attendanceSessionSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   startTime: { type: String, required: true },
   endTime: { type: String, required: true },
-  createdBy: { type: String, required: true } // Changed to String for simplicity
+  createdBy: { type: String, required: true }
 });
 
 export default mongoose.model('AttendanceSession', attendanceSessionSchema);
+

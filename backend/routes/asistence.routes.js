@@ -1,9 +1,9 @@
 import express from "express"
-import createNewAsistence from "../controllers/asistence.controller.js"
+import { createAttendanceSession } from "../controllers/asistence.controller.js"
 
 let RoutesAsistence = express.Router()
 
 
-RoutesAsistence.post("/asistences", createNewAsistence)
+RoutesAsistence.post("/asistences", createAttendanceSession)
 
 export default RoutesAsistence
