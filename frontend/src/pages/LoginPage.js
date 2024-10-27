@@ -1,33 +1,47 @@
-import { LoginForm } from '../components/LoginForm';
+import { LoginFormClass } from '../components/LoginForm';
 import { loginUser } from '../services/api';
 
-export const LoginPage = () => {
-  const page = document.createElement('div');
-  page.className = 'flex items-center justify-center min-h-screen bg-gray-100';
+class LoginPageClass {
+  constructor() {
+    this.page = this.createPage();
+    this.loginForm = new LoginFormClass();
+    this.attachForm();
+  }
 
-  const loginForm = LoginForm(); // Renderizamos el formulario de login
-  page.appendChild(loginForm);
+  createPage() {
+    const page = document.createElement('div');
+    page.className = 'flex items-center justify-center min-h-screen bg-gray-100';
+    return page;
+  }
 
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  attachForm() {
+    const formElement = this.loginForm.getFormElement();
+    this.page.appendChild(formElement);
 
-    const email = loginForm.querySelector('#email').value;
-    const password = loginForm.querySelector('#password').value;
+    formElement.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    try {
-      const userData = await loginUser({ email, password });
-      if (userData.role === 'student') {
-        window.location.href = '/student-dashboard';
-      } else if (userData.role === 'teacher') {
-        window.location.href = '/teacher-dashboard';
-      
-      }else if (userData.role === 'admin') {
-        window.location.href = '/';
-    }
-    } catch (error) {
-      alert('Login failed. Please try again.');
-    }
-  });
+      const email = formElement.querySelector('#email').value;
+      const password = formElement.querySelector('#password').value;
 
-  return page;
-};
+      try {
+        const userData = await loginUser({ email, password });
+        if (userData.role === 'student') {
+          window.location.href = '/student-dashboard';
+        } else if (userData.role === 'teacher') {
+          window.location.href = '/teacher-dashboard';
+        } else if (userData.role === 'admin') {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        alert('Login failed. Please try again.');
+      }
+    });
+  }
+
+  render() {
+    return this.page;
+  }
+}
+
+export { LoginPageClass };

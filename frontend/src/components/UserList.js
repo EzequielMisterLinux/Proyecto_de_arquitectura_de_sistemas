@@ -78,7 +78,7 @@ export const UserList = async () => {
           try {
             await deleteUser(id);
             Swal.fire('Deleted!', 'User has been deleted.', 'success');
-            window.location.reload();
+            // window.location.reload();
           } catch (error) {
             Swal.fire('Error', 'Failed to delete user', 'error');
           }

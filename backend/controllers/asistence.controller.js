@@ -18,26 +18,44 @@ export const createAttendanceSession = async (req, res) => {
 
 export const markAttendance = async (req, res) => {
   const { sessionId, name, apellido, present } = req.body;
+  
   try {
     const session = await AttendanceSession.findById(sessionId);
     if (!session) {
       return res.status(404).json({ msg: "Attendance session not found" });
     }
 
+    // Buscar asistencias previas del estudiante
+    const previousAttendance = await Attendance.findOne({
+      'student.name': name,
+      'student.apellido': apellido
+    });
+
+    const newCount = previousAttendance ? previousAttendance.attendanceCount + 1 : 1;
+
     const attendance = new Attendance({
       session: sessionId,
       student: { name, apellido },
-      present
+      present,
+      attendanceCount: present ? newCount : 0
     });
-    await attendance.save();
 
-    io.emit('attendance_marked', { sessionId, studentName: `${name} ${apellido}`, present });
+    await attendance.save();
+    
+    io.emit('attendance_marked', {
+      sessionId,
+      studentName: `${name} ${apellido}`,
+      present,
+      attendanceCount: attendance.attendanceCount
+    });
+
     res.status(201).json({ msg: "Attendance marked successfully", attendance });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "Error marking attendance" });
   }
 };
+
 
 export const getSessionAttendance = async (req, res) => {
   const { sessionId } = req.params;

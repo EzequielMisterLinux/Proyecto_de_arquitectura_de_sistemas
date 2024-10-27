@@ -1,89 +1,77 @@
-import './index.css'
-import { LoginPage } from './src/pages/LoginPage';
-import { HomePage } from './src/pages/HomePage';
-import { StudentDashboard } from './src/pages/StudentDashboard';
-import { TeacherDashboard } from './src/pages/TeacherDashboard';
-import api from './src/services/api';
+import './index.css';
+import { LoginPageClass } from './src/pages/LoginPage';
+import { createHomePage } from './src/pages/HomePage';
+import { initializeTeacherDashboard } from './src/pages/TeacherDashboard';
+import { initializeStudentDashboard } from './src/pages/StudentDashboard';
 
-const app = document.querySelector('#app');
-
-const checkAuth = async () => {
-  try {
-    await api.get('/users');
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
+const app = document.querySelector('#app'); // Referencia al contenedor principal
 const renderPage = async () => {
   console.log('Rendering page. Current path:', window.location.pathname);
-  app.innerHTML = '';
-  const isAuthenticated = await checkAuth();
-  const userRole = localStorage.getItem('userRole');
-  console.log('User authenticated:', isAuthenticated, 'User role:', userRole);
+  app.innerHTML = ''; // Limpia el contenido anterior
 
-  if (isAuthenticated) {
+  const userRole = localStorage.getItem('userRole'); // Obtiene el rol del usuario almacenado
+  console.log('User role:', userRole);
+
+  if (userRole) {
     switch (window.location.pathname) {
       case '/':
+        // Renderiza la HomePage dependiendo del rol del usuario
         if (userRole === 'admin') {
           console.log('Rendering HomePage for admin');
-          app.appendChild(await HomePage());
+          const homePageElement = await createHomePage(); // Cargar HomePage
+          app.appendChild(homePageElement); // Agregar HomePage al DOM
         } else if (userRole === 'student') {
-          console.log('Redirecting student to student dashboard');
-          window.location.href = '/student-dashboard';
+          console.log('Redirecting student to Student Dashboard');
+          window.navigateTo('/student-dashboard'); // Redirigir a Student Dashboard
         } else if (userRole === 'teacher') {
-          console.log('Redirecting teacher to teacher dashboard');
-          window.location.href = '/teacher-dashboard';
+          console.log('Redirecting teacher to Teacher Dashboard');
+          window.navigateTo('/teacher-dashboard'); // Redirigir a Teacher Dashboard
         }
-        break;
+        break;1
+
       case '/student-dashboard':
         if (userRole === 'student') {
           console.log('Rendering StudentDashboard');
-          app.appendChild(StudentDashboard());
+          const dashboardElement = await initializeStudentDashboard(); // Cargar Student Dashboard
+          app.appendChild(dashboardElement); // Agregar Student Dashboard al DOM
         } else {
           console.log('Unauthorized access to student dashboard, redirecting to home');
-          window.location.href = '/';
+          window.navigateTo('/'); // Redirigir a Home si el acceso no es permitido
         }
         break;
+
       case '/teacher-dashboard':
         if (userRole === 'teacher') {
           console.log('Rendering TeacherDashboard');
-          app.appendChild(TeacherDashboard());
-
+          const dashboardElement = await initializeTeacherDashboard(); // Cargar Teacher Dashboard
+          app.appendChild(dashboardElement); // Agregar Teacher Dashboard al DOM
         } else {
           console.log('Unauthorized access to teacher dashboard, redirecting to home');
-          window.location.href = '/';
+          window.navigateTo('/'); // Redirigir a Home si el acceso no es permitido
         }
         break;
+
       default:
         console.log('Unknown route, redirecting to home');
-        window.location.href = '/';
+        window.navigateTo('/'); // Redirigir a Home si la ruta es desconocida
+        break;
     }
   } else {
-        if (userRole === 'student') {
-      console.log('Rendering StudentDashboard');
-      app.appendChild(StudentDashboard());
-
-    }else if (userRole === 'teacher') {
-      console.log('Rendering TeacherDashboard');
-      app.appendChild(TeacherDashboard());
-    }else{
-      console.log('User not authenticated, rendering LoginPage');
-    app.appendChild(LoginPage());
-    }
-    
+    // Si no hay un rol definido, renderiza la LoginPage
+    console.log('User role not defined, rendering LoginPage');
+    const loginPageElement = new LoginPageClass();
+    app.appendChild(loginPageElement.render()); // Agregar LoginPage al DOM
   }
 };
 
-renderPage();
-
+// Escucha los eventos de retroceso del historial
 window.addEventListener('popstate', renderPage);
 
+// Función para manejar la navegación dentro de la aplicación
 window.navigateTo = (path) => {
   console.log('Navigating to:', path);
-  history.pushState(null, '', path);
-  renderPage();
+  history.pushState(null, '', path); // Agrega la nueva ruta al historial sin recargar la página
+  renderPage(); // Renderiza la página correspondiente
 };
 
-export { renderPage };
+renderPage(); // Llama a la función para renderizar la página inicialmente

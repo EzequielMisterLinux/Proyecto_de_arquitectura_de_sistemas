@@ -4,20 +4,16 @@ import mongoose from "mongoose";
 
 const newAsistence = mongoose.Schema({
   name: {
-    type: String,
-    required: true
+    type: String
   },
   apellido: {
-    type: String,
-    required: true
+    type: String
   },
   fecha: {
-    type: Date,
-    required: true
+    type: Date
   },
   presente: {
-    type: Boolean,
-    required: true
+    type: Boolean
   }
 });
 
